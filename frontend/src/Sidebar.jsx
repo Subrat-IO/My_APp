@@ -14,7 +14,7 @@ export default function SideBar() {
   // Handle creating a new thread
   const handleNewChat = async () => {
     try {
-      const response = await fetch('http://localhost:9090/api/thread', {
+      const response = await fetch('https://my-app-grd4.onrender.com/api/thread', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: 'New Chat', messages: [] })
@@ -38,7 +38,7 @@ const handleDeleteThread = async (threadId, e) => {
   if (!confirmDelete) return; // exit if user cancels
 
   try {
-    const response = await fetch(`https://my-app-grd4.onrender.com/api/thread${threadId}`, {
+    const response = await fetch(`https://my-app-grd4.onrender.com/api/thread/${threadId}`, {
       method: 'DELETE',
     });
     if (!response.ok) throw new Error('Failed to delete thread');
@@ -57,7 +57,7 @@ const handleDeleteThread = async (threadId, e) => {
     <section className="sidebar">
       {/* Top Left Logo */}
       <div className="top-section">
-        <img className="logo" src="/src/assets/ChatGPT-Logo.png" alt="ChatGPT Logo" />
+        <img className="logo" src="/assets/ChatGPT-Logo.png" alt="ChatGPT Logo" />
       </div>
 
       {/* New Chat Button */}
