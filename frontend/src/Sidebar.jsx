@@ -57,7 +57,7 @@ const handleDeleteThread = async (threadId, e) => {
     <section className="sidebar">
       {/* Top Left Logo */}
       <div className="top-section">
-        <img className="logo" src="/assets/ChatGPT-Logo.png" alt="ChatGPT Logo" />
+        <img className="logo" src="/ChatGPT-Logo.png" alt="ChatGPT Logo" />
       </div>
 
       {/* New Chat Button */}
