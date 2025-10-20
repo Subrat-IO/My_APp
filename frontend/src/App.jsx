@@ -13,7 +13,7 @@ function App() {
 
   // Fetch threads from backend on mount
   useEffect(() => {
-    fetch("http://localhost:9090/api/thread")
+    fetch("https://my-app-grd4.onrender.com/api/thread")
       .then(res => res.json())
       .then(data => {
         setThreads(data);
