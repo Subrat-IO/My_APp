@@ -2,7 +2,10 @@ import './ChatWindow.css';
 import { MyContext } from './MyContext.jsx';
 import { useContext, useState } from 'react';
 import { ScaleLoader } from 'react-spinners';
-import ReactMarkdown from 'react-markdown'; // <-- added
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';          // Parse HTML in Markdown
+import rehypeSanitize from 'rehype-sanitize'; // Sanitize HTML for safety
+import remarkGfm from 'remark-gfm';          // Tables, strikethrough, task lists
 
 export default function ChatWindow() {
   const { prompt, setPrompt, messages, setMessages, currThreadId } = useContext(MyContext);
@@ -60,7 +63,11 @@ export default function ChatWindow() {
           <div key={i} className="messageWrapper">
             <div className={msg.role === "user" ? "userMessage" : "assistantMessage"}>
               {msg.role === "assistant" ? (
-                <ReactMarkdown>{msg.content}</ReactMarkdown>
+                <ReactMarkdown
+                  children={msg.content}
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeRaw, rehypeSanitize]}
+                />
               ) : (
                 msg.content
               )}
