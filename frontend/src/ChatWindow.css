@@ -1,35 +1,38 @@
+/* ================= Window ================= */
 .WindowText {
-  position: absolute;
+  position: fixed;
   top: 0;
-  left: 260px;
+  left: 260px; /* adjust if you have sidebar */
   right: 0;
   bottom: 0;
+  height: 100vh;
   background-color: #202023;
   color: #ececf1;
   display: flex;
   flex-direction: column;
   font-family: 'Inter', sans-serif;
   overflow: hidden;
-}
-
-.navbar {
-  width: 100%;
-  height: 60px;
-  background-color: #202123;
-  padding: 0 25px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   box-sizing: border-box;
 }
 
+/* ================= Navbar ================= */
+.navbar {
+  height: 60px;
+  width: 100%;
+  background-color: #202123;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 25px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 .title {
-  font-weight: 500;
-  font-size: 1.1rem;
   display: flex;
   align-items: center;
   gap: 6px;
+  font-weight: 500;
+  font-size: 1.1rem;
 }
 
 .DownArrow {
@@ -44,10 +47,12 @@
 }
 
 .userIconDiv {
-  background-color: #3e3f4b;
-  border-radius: 50%;
   width: 35px;
   height: 35px;
+  margin-right: 3rem;
+  
+  border-radius: 50%;
+  background-color: #3e3f4b;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -64,37 +69,103 @@
   color: #ececf1;
 }
 
+/* ================= Chat Area ================= */
 .Chat {
   flex: 1;
   overflow-y: auto;
-  padding: 20px 30px 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* center the chat column */
+  gap: 12px;
+  padding: 20px 0;
   box-sizing: border-box;
 }
 
+/* Scrollbar */
+.Chat::-webkit-scrollbar {
+  width: 8px;
+}
+
+.Chat::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+.Chat::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* ================= Messages ================= */
+.messageWrapper {
+  width: 70%;
+  max-width: 800px;
+  display: flex;
+  box-sizing: border-box;
+}
+
+/* assistant (left) */
+.assistantMessage {
+  align-self: flex-start;
+  background-color: #40414f;
+  color: #ececf1;
+  padding: 12px 16px;
+  border-radius: 18px 18px 18px 0;
+  max-width: 75%;
+  word-wrap: break-word;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+/* user (right) */
+.userMessage {
+  align-self: flex-end;
+  background-color: #0b93f6;
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 18px 18px 0 18px;
+  margin-left: auto;
+  max-width: 75%;
+  word-wrap: break-word;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+/* ================= Input ================= */
 .ChatInputContainer {
   position: sticky;
   bottom: 0;
+  width: 100%;
   background-color: #202023;
-
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 15px 0 25px;
+  padding: 15px 0;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
-  box-sizing: border-box;
   z-index: 10;
+  box-sizing: border-box;
 }
 
+
+.beginText {
+  width: 70%;
+  max-width: 800px;
+  text-align: center;
+  
+  margin: 300px;
+  font-size: 2.1rem;
+  color: rgba(213, 194, 194, 0.5);
+  line-height: 1.5;
+}
+
+
+
 .ChatInput {
-  width: 100%;
+  width: 70%;
   max-width: 800px;
   display: flex;
   align-items: center;
-  justify-content: center;
   background-color: #40414f;
-  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 12px;
   padding: 5px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   box-sizing: border-box;
 }
 
@@ -112,15 +183,29 @@
   color: rgba(255, 255, 255, 0.5);
 }
 
+.assistantMessage.introText {
+  background-color: #40414f; /* same as other assistant messages */
+  color: #ececf1;
+  padding: 12px 16px;
+  border-radius: 18px 18px 18px 0;
+  max-width: 75%;
+  word-wrap: break-word;
+  text-align: left;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  font-size: 1rem;
+  margin: 0 auto;
+}
+
 .sendBtn {
   background: none;
   border: none;
   color: #ececf1;
   cursor: pointer;
   font-size: 1.4rem;
-  margin-right: 6px;
+  margin-left: 6px;
   transition: color 0.2s ease, transform 0.1s ease;
 }
+
 
 .sendBtn:hover {
   color: #ffffff;
@@ -131,40 +216,18 @@
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.4);
   text-align: center;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
-.WindowText::-webkit-scrollbar {
-  width: 8px;
-}
-
-.WindowText::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-}
-
-.WindowText::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(255, 255, 255, 0.3);
-}
-
+/* ================= Responsive ================= */
 @media (max-width: 768px) {
   .WindowText {
     left: 70px;
   }
 
-  .navbar {
-    padding: 0 15px;
-  }
-
-  .Chat {
-    padding: 15px;
-  }
-
-  .ChatInputContainer {
-    padding: 10px 0 20px;
-  }
-
+  .messageWrapper,
   .ChatInput {
+    width: 90%;
     max-width: 95%;
   }
 }

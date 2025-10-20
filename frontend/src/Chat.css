@@ -1,0 +1,30 @@
+.chatMessages {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* space between messages */
+  padding: 1rem;
+}
+
+/* User messages */
+.userMessage {
+  align-self: flex-end;
+  background-color: #0b93f6; /* bright blue */
+  color: #fff;
+  padding: 0.6rem 1rem;
+  border-radius: 18px 18px 0 18px; /* rounded except bottom-left */
+  max-width: 70%;
+  word-wrap: break-word;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Assistant messages */
+.assistantMessage {
+  align-self: flex-start;
+  background-color: #e5e5ea; /* light grey */
+  color: #000;
+  padding: 0.6rem 1rem;
+  border-radius: 18px 18px 18px 0; /* rounded except bottom-right */
+  max-width: 70%;
+  word-wrap: break-word;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}

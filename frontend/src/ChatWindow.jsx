@@ -1,40 +1,38 @@
 import './ChatWindow.css';
-import Chat from "./Chat.jsx";
 import { MyContext } from './MyContext.jsx';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
+import { ScaleLoader } from 'react-spinners';
+import ReactMarkdown from 'react-markdown'; // <-- added
 
 export default function ChatWindow() {
-  const { prompt, setPrompt, reply, setReply, currThreadId } = useContext(MyContext);
+  const { prompt, setPrompt, messages, setMessages, currThreadId } = useContext(MyContext);
+  const [loading, setLoading] = useState(false);
 
   const getReply = async () => {
-    if (!prompt.trim()) return; // prevent empty messages
+    if (!prompt.trim()) return;
+
+    // Add user message
+    setMessages(prev => [...prev, { role: "user", content: prompt }]);
+    setPrompt("");
+    setLoading(true);
 
     try {
       const response = await fetch("http://localhost:9090/api/chat", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        // ✅ body must be a JSON string
-        body: JSON.stringify({
-          message: prompt,
-          threadId: currThreadId,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: prompt, threadId: currThreadId }),
       });
 
-      if (!response.ok) {
-        throw new Error(`Server error: ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error(`Server error: ${response.status}`);
       const data = await response.json();
-      console.log("Server reply:", data);
 
-      // ✅ Assuming server returns { reply: "..." }
-      setReply(data.reply || "No reply received");
-      setPrompt(""); // clear input after sending
+      // Add assistant message
+      setMessages(prev => [...prev, { role: "assistant", content: data.reply }]);
     } catch (error) {
       console.error("Error fetching reply:", error);
-      setReply("Error getting reply. Please try again.");
+      setMessages(prev => [...prev, { role: "assistant", content: "⚠️ Error getting reply. Please try again." }]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -52,7 +50,31 @@ export default function ChatWindow() {
 
       {/* Chat Area */}
       <div className="Chat">
-        <Chat reply={reply} /> {/* ✅ Pass reply down if needed */}
+        {messages.length === 0 && (
+          <div className="assistantMessage introText">
+            <p>Welcome! Select a chat or start a new chat to begin.</p>
+          </div>
+        )}
+
+        {messages.map((msg, i) => (
+          <div key={i} className="messageWrapper">
+            <div className={msg.role === "user" ? "userMessage" : "assistantMessage"}>
+              {msg.role === "assistant" ? (
+                <ReactMarkdown>{msg.content}</ReactMarkdown>
+              ) : (
+                msg.content
+              )}
+            </div>
+          </div>
+        ))}
+
+        {loading && (
+          <div className="messageWrapper">
+            <div className="assistantMessage loaderBubble">
+              <ScaleLoader color="#10a37f" height={16} />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Input Box */}
@@ -64,7 +86,7 @@ export default function ChatWindow() {
             placeholder="Send a message..."
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && getReply()} // Press Enter to send
+            onKeyDown={(e) => e.key === "Enter" && getReply()}
           />
           <button className="sendBtn" onClick={getReply}>
             <i className='bx bxs-send'></i>

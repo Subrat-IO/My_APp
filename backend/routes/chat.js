@@ -4,7 +4,7 @@ import getOpenAiResponse from "../utils/openai.js";
 
 const router = express.Router();
 
-// POST /api/chat
+// ---------------- POST /api/chat ----------------
 router.post("/chat", async (req, res) => {
   const { threadId, message } = req.body;
 
@@ -13,31 +13,28 @@ router.post("/chat", async (req, res) => {
   }
 
   try {
-    // Find existing thread
     let thread = await Thread.findOne({ threadId });
 
     if (!thread) {
-      // Create new thread if it doesn't exist
+      // Thread doesn't exist, create new with title = first message
       thread = new Thread({
         threadId,
-        title: message.slice(0, 50), // first 50 chars as title
+        title: message.slice(0, 50),
         messages: [{ role: "user", content: message }],
       });
     } else {
-      // Add user message to existing thread
+      // If thread exists and has no title, set title to first message
+      if (!thread.title) {
+        thread.title = message.slice(0, 50);
+      }
       thread.messages.push({ role: "user", content: message });
     }
 
     // Get AI response
     const assistantReply = await getOpenAiResponse(message);
-
-    // Add AI message
     thread.messages.push({ role: "assistant", content: assistantReply });
 
-    // Update timestamp
     thread.updatedAt = new Date();
-
-    // Save to MongoDB
     await thread.save();
 
     res.json({ reply: assistantReply });
@@ -47,41 +44,53 @@ router.post("/chat", async (req, res) => {
   }
 });
 
+// ---------------- GET /api/thread ----------------
 router.get("/thread", async (req, res) => {
   try {
     const threads = await Thread.find({}).sort({ updatedAt: -1 });
-
     res.json(threads);
-
-
-
-
-
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "failed to fetch threads" });
+    console.error("❌ Error fetching threads:", error);
+    res.status(500).json({ error: "Failed to fetch threads" });
   }
-})
+});
 
+// ---------------- POST /api/thread ----------------
+router.post("/thread", async (req, res) => {
+  try {
+    const newThread = new Thread({
+      threadId: `thread-${Date.now()}`,
+      title: "", // empty initially, will be updated with first message
+      messages: [],
+    });
 
-router.get("thread/:threadId", async (req, res) => {
+    await newThread.save();
+    res.status(201).json(newThread);
+  } catch (error) {
+    console.error("❌ Error creating new thread:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// ---------------- GET /api/thread/:threadId ----------------
+router.get("/thread/:threadId", async (req, res) => {
   const { threadId } = req.params;
+
   try {
     const thread = await Thread.findOne({ threadId });
+
     if (!thread) {
-      res.status(404).json("thread Not found");
-
+      return res.status(404).json({ error: "Thread not found" });
     }
+
     res.json(thread.messages);
-
-
   } catch (error) {
-    console.log(error)
-    res.status(500).json({ error: "failed to fetch thread" });
+    console.error("❌ Error fetching thread:", error);
+    res.status(500).json({ error: "Failed to fetch thread" });
   }
-})
+});
 
-
+// ---------------- DELETE /api/thread/:threadId ----------------
 router.delete("/thread/:threadId", async (req, res) => {
   const { threadId } = req.params;
 
@@ -89,15 +98,14 @@ router.delete("/thread/:threadId", async (req, res) => {
     const deletedThread = await Thread.findOneAndDelete({ threadId });
 
     if (!deletedThread) {
-      return res.status(404).json({ error: "thread cannot be deleted" });
+      return res.status(404).json({ error: "Thread cannot be deleted" });
     }
 
-    res.status(200).json({ message: "thread deleted successfully" });
+    res.status(200).json({ message: "Thread deleted successfully" });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "internal server error" });
+    console.error("❌ Error deleting thread:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
-
 
 export default router;

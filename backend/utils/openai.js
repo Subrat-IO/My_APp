@@ -13,7 +13,7 @@ const getOpenAiResponse = async (message) => {
 
   try {
     const completion = await openai.chat.completions.create({
-      model: "openai/gpt-4o",
+      model: "openai/gpt-5-chat",
       messages: [{ role: "user", content: message }],
     });
 
