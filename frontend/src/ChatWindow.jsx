@@ -3,9 +3,9 @@ import { MyContext } from './MyContext.jsx';
 import { useContext, useState } from 'react';
 import { ScaleLoader } from 'react-spinners';
 import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';          // Parse HTML in Markdown
-import rehypeSanitize from 'rehype-sanitize'; // Sanitize HTML for safety
-import remarkGfm from 'remark-gfm';          // Tables, strikethrough, task lists
+import rehypeRaw from 'rehype-raw';
+import rehypeSanitize from 'rehype-sanitize';
+import remarkGfm from 'remark-gfm';
 
 export default function ChatWindow() {
   const { prompt, setPrompt, messages, setMessages, currThreadId } = useContext(MyContext);
@@ -14,7 +14,6 @@ export default function ChatWindow() {
   const getReply = async () => {
     if (!prompt.trim()) return;
 
-    // Add user message
     setMessages(prev => [...prev, { role: "user", content: prompt }]);
     setPrompt("");
     setLoading(true);
@@ -29,7 +28,6 @@ export default function ChatWindow() {
       if (!response.ok) throw new Error(`Server error: ${response.status}`);
       const data = await response.json();
 
-      // Add assistant message
       setMessages(prev => [...prev, { role: "assistant", content: data.reply }]);
     } catch (error) {
       console.error("Error fetching reply:", error);
@@ -41,17 +39,11 @@ export default function ChatWindow() {
 
   return (
     <div className="WindowText">
-      {/* Navbar */}
       <div className="navbar">
-        <span className="title">
-          Sigma GPT <i className='bx bxs-chevron-down DownArrow'></i>
-        </span>
-        <div className="userIconDiv">
-          <i className='bx bxs-user'></i>
-        </div>
+        <span className="title">Sigma GPT <i className='bx bxs-chevron-down DownArrow'></i></span>
+        <div className="userIconDiv"><i className='bx bxs-user'></i></div>
       </div>
 
-      {/* Chat Area */}
       <div className="Chat">
         {messages.length === 0 && (
           <div className="assistantMessage introText">
@@ -68,9 +60,7 @@ export default function ChatWindow() {
                   remarkPlugins={[remarkGfm]}
                   rehypePlugins={[rehypeRaw, rehypeSanitize]}
                 />
-              ) : (
-                msg.content
-              )}
+              ) : msg.content}
             </div>
           </div>
         ))}
@@ -84,7 +74,6 @@ export default function ChatWindow() {
         )}
       </div>
 
-      {/* Input Box */}
       <div className="ChatInputContainer">
         <div className="ChatInput">
           <input
